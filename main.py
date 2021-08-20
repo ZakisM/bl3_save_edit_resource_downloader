@@ -4,6 +4,17 @@ from pathlib import Path
 import gspread
 
 
+def format_info(info):
+    words = info.split(',')
+    res = []
+
+    for w in words:
+        res.append(w.removeprefix(',').removesuffix(',').strip())
+
+    res_joined = ', '.join(res)
+
+    return res_joined.strip().removesuffix(',')
+
 def download_inventory_parts():
     # Make output dir
     Path("./output/INV_PARTS").mkdir(parents=True, exist_ok=True)
@@ -166,7 +177,10 @@ def download_inventory_parts_info():
                     part_name_split = val[0].split('.')
                     if len(part_name_split) == 2 and part_name_split[0] == part_name_split[1]:
                         if val[1] != "" and val[1] != "* Unknown":
-                            csv_row = [part_name_split[0], "", "", val[1]]
+                            part_name_s = format_info(part_name_split[0])
+                            effects_s = val[1]
+
+                            csv_row = [part_name_s, "", "", effects_s]
                             w.writerow(csv_row)
 
         for sheet in weapon_sheets:
@@ -182,12 +196,16 @@ def download_inventory_parts_info():
                             if val[1] == "" and val[2] == "":
                                 continue
 
-                            csv_row = [part_name_split[0], val[1], val[2], ""]
+                            part_name_s = format_info(part_name_split[0])
+                            positives_s = format_info(val[1])
+                            negatives_s = format_info(val[2])
+
+                            csv_row = [part_name_s, positives_s, negatives_s, ""]
                             w.writerow(csv_row)
 
 
 if __name__ == "__main__":
     gc = gspread.service_account()
 
-    # download_inventory_parts()
+    download_inventory_parts()
     download_inventory_parts_info()
