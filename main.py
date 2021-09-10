@@ -15,6 +15,7 @@ def format_info(info):
 
     return res_joined.strip().removesuffix(',')
 
+
 def download_inventory_parts():
     # Make output dir
     Path("./output/INV_PARTS").mkdir(parents=True, exist_ok=True)
@@ -203,9 +204,81 @@ def download_inventory_parts_info():
                             csv_row = [part_name_s, positives_s, negatives_s, ""]
                             w.writerow(csv_row)
 
+def download_all_global_customizations():
+    # Make output dir
+    Path("./output/SKINS").mkdir(parents=True, exist_ok=True)
+
+    # Borderlands 3 - All Global Customizations
+    sh = gc.open_by_key("1v-F_3C2ceaFKJae1b6wmbelw_jLjmPPriBLzGTZMqRc")
+
+    print("Downloading Beastmaster Heads, Skins and Emotes")
+    beastmaster_heads = sh.worksheet("Beastmaster Heads")
+    beastmaster_skins = sh.worksheet("Beastmaster Skins")
+    beastmaster_emotes = sh.worksheet("Beastmaster Emotes")
+
+    print("Downloading Gunner Heads, Skins and Emotes")
+    gunner_heads = sh.worksheet("Gunner Heads")
+    gunner_skins = sh.worksheet("Gunner Skins")
+    gunner_emotes = sh.worksheet("Gunner Emotes")
+
+    print("Downloading Operative Heads, Skins and Emotes")
+    operative_heads = sh.worksheet("Operative Heads")
+    operative_skins = sh.worksheet("Operative Skins")
+    operative_emotes = sh.worksheet("Operative Emotes")
+
+    print("Downloading Siren Heads, Skins and Emotes")
+    siren_heads = sh.worksheet("Siren Heads")
+    siren_skins = sh.worksheet("Siren Skins")
+    siren_emotes = sh.worksheet("Siren Emotes")
+
+    print("Downloading Weapon Skins and Trinkets")
+    weapon_skins = sh.worksheet("Weapon Skins")
+    weapon_trinkets = sh.worksheet("Weapon Trinkets")
+
+    print("Downloading ECHO Themes")
+    echo_themes = sh.worksheet("ECHO Themes")
+
+    print("Downloading Room Decorations")
+    room_decorations = sh.worksheet("Room Decorations")
+
+    profile_heads = [beastmaster_heads, gunner_heads, operative_heads, siren_heads]
+    profile_skins = [beastmaster_skins, gunner_skins, operative_skins, siren_skins]
+    profile_emotes = [beastmaster_emotes, gunner_emotes, operative_emotes, siren_emotes]
+
+    weapon_skins = [weapon_skins]
+    weapon_trinkets = [weapon_trinkets]
+
+    echo_themes = [echo_themes]
+
+    room_decorations = [room_decorations]
+
+    all_items = [("PROFILE_HEADS", profile_heads), ("PROFILE_SKINS", profile_skins), ("PROFILE_EMOTES", profile_emotes),
+                 ("PROFILE_WEAPON_SKINS", weapon_skins), ("PROFILE_WEAPON_TRINKETS", weapon_trinkets),
+                 ("PROFILE_ECHO_THEMES", echo_themes), ("PROFILE_ROOM_DECORATIONS", room_decorations)]
+
+    # Write Profile Heads
+    for (name, values) in all_items:
+        print("Saving {}...".format(name))
+
+        with open("output/SKINS/{}.csv".format(name), "w") as f:
+            w = csv.writer(f)
+
+            for sheet in values:
+                print("Saving: {}".format(sheet.title))
+
+                for (i, val) in enumerate(sheet.get_all_values()):
+                    if i != 0:
+                        if len(val) >= 4:
+                            if val[3] != "Always Available":
+                                fixed_bal_name = val[2].replace("InvBal_", "")
+
+                                csv_row = [fixed_bal_name, val[0]]
+                                w.writerow(csv_row)
+
 
 if __name__ == "__main__":
     gc = gspread.service_account()
 
-    download_inventory_parts()
-    download_inventory_parts_info()
+    # download_inventory_parts()
+    # download_inventory_parts_info()
+    download_all_global_customizations()
