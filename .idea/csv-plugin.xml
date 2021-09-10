@@ -3,48 +3,6 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="/output/INVENTORY_PARTS_ALL.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/output/INVENTORY_PARTS_ARTIFACTS.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/output/INVENTORY_PARTS_CLASS_MODS.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/output/INVENTORY_PARTS_GRENADE_MODS.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/output/INVENTORY_PARTS_SHIELDS.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/output/INVENTORY_PARTS_WEAPONS.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="/output/INV_PARTS/INVENTORY_PARTS_ALL.csv">
           <value>
             <Attribute>
@@ -59,14 +17,49 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="/output/INV_PARTS_INFO/INV_PARTS_INFO_ALL_EFFECTS.csv">
+        <entry key="/output/SKINS/PROFILE_ECHO_THEMES.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="/output/INV_PARTS_INFO/INV_PARTS_INFO_ALL_POSITIVES_NEGATIVES.csv">
+        <entry key="/output/SKINS/PROFILE_EMOTES.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/output/SKINS/PROFILE_HEADS.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/output/SKINS/PROFILE_ROOM_DECORATIONS.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/output/SKINS/PROFILE_SKINS.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/output/SKINS/PROFILE_WEAPON_SKINS.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/output/SKINS/PROFILE_WEAPON_TRINKETS.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
