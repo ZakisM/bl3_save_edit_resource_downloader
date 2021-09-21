@@ -5,6 +5,28 @@ import gspread
 
 
 def format_info(info):
+    info = info.replace("Dmg", "Damage")
+    info = info.replace("dmg", "damage")
+    info = info.replace("Acc. Bloom", "Acc Bloom")
+    info = info.replace("Recoil W:", "Recoil Width:")
+    info = info.replace("Recoil H:", "Recoil Height:")
+
+    # Fix incorrect spelling
+    info = info.replace("Amarea", "Amara")
+    info = info.replace("enemry", "enemy")
+    info = info.replace("Mazimum", "Maximum")
+    info = info.replace("receieve", "receive")
+    info = info.replace("additonal", "additional")
+    info = info.replace("Unlease", "Unleash")
+    info = info.replace("borken", "broken")
+    info = info.replace("dmage", "damage")
+    info = info.replace("Forify", "Fortify")
+    info = info.replace("dropa ", "drop a")
+    info = info.replace("Critcal", "Critical")
+    info = info.replace("Maxium", "Maximum")
+    info = info.replace("dealth", "dealt")
+    info = info.replace("increasted", "increased")
+
     words = info.split(',')
     res = []
 
@@ -76,7 +98,7 @@ def download_inventory_parts():
                     inv_parts_all.write(",".join(row) + "\n")
 
 
-def download_inventory_parts_info():
+def download_old_inventory_parts_info():
     # Make output dir
     Path("./output/INV_PARTS_INFO").mkdir(parents=True, exist_ok=True)
 
@@ -167,7 +189,7 @@ def download_inventory_parts_info():
     weapon_sheets_unflattened = [pistols, shotguns, assault_rifles, smgs, sniper_rifles, heavy_weapons]
     weapon_sheets = [item for sublist in weapon_sheets_unflattened for item in sublist]
 
-    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL.csv", "w") as f:
+    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_OLD.csv", "w") as f:
         w = csv.writer(f)
         w.writerow(["Part", "Positives", "Negatives", "Effects"])
 
@@ -177,9 +199,9 @@ def download_inventory_parts_info():
                 if len(val) >= 2:
                     part_name_split = val[0].split('.')
                     if len(part_name_split) == 2 and part_name_split[0] == part_name_split[1]:
-                        if val[1] != "" and val[1] != "* Unknown":
-                            part_name_s = format_info(part_name_split[0])
-                            effects_s = val[1]
+                        if val[1].strip() != "" and val[1].strip() != "* Unknown":
+                            part_name_s = part_name_split[0].strip()
+                            effects_s = format_info(val[1].strip())
 
                             csv_row = [part_name_s, "", "", effects_s]
                             w.writerow(csv_row)
@@ -190,19 +212,22 @@ def download_inventory_parts_info():
                 if len(val) >= 3:
                     part_name_split = val[0].split('.')
                     if len(part_name_split) == 2 and part_name_split[0] == part_name_split[1]:
-                        if val[1] != "":
-                            if val[1] == "-":
-                                val[1] = ""
+                        if val[1].strip() == "-":
+                            val[1] = ""
 
-                            if val[1] == "" and val[2] == "":
-                                continue
+                        if val[2].strip() == "-":
+                            val[2] = ""
 
-                            part_name_s = format_info(part_name_split[0])
-                            positives_s = format_info(val[1])
-                            negatives_s = format_info(val[2])
+                        if val[1].strip() == "" and val[2].strip() == "":
+                            continue
 
-                            csv_row = [part_name_s, positives_s, negatives_s, ""]
-                            w.writerow(csv_row)
+                        part_name_s = part_name_split[0].strip()
+                        positives_s = format_info(val[1])
+                        negatives_s = format_info(val[2])
+
+                        csv_row = [part_name_s, positives_s, negatives_s, ""]
+                        w.writerow(csv_row)
+
 
 def download_all_global_customizations():
     # Make output dir
@@ -267,6 +292,12 @@ def download_all_global_customizations():
                 print("Saving: {}".format(sheet.title))
 
                 for (i, val) in enumerate(sheet.get_all_values()):
+                    not_allowed = ["director", "deluxe", "designer", "neon", "retro", "gearbox", "gold", "toy box"]
+                    unlock_requirements = val[1].lower()
+
+                    if any(n in unlock_requirements for n in not_allowed):
+                        continue
+
                     if i != 0:
                         if len(val) >= 4:
                             if val[3] != "Always Available":
@@ -276,9 +307,106 @@ def download_all_global_customizations():
                                 w.writerow(csv_row)
 
 
+def download_new_inventory_parts_info():
+    # Make output dir
+    Path("./output/INV_PARTS_INFO").mkdir(parents=True, exist_ok=True)
+
+    # Borderlands 3 - Item parts/stats
+    sh = gc.open_by_key("1urwGdlmpzw7wbQcA_7zHqFlfM6QAm9SHG0CX4dxfRuQ")
+
+    # Pistols
+    print("Downloading Pistols")
+    pistols = sh.worksheet("Pistols")
+
+    # SMG's
+    print("Downloading SMG's")
+    smgs = sh.worksheet("SMGs")
+
+    # Assault Rifles
+    print("Downloading Assault Rifles")
+    assault_rifles = sh.worksheet("Assault Rifles")
+
+    # Shotguns
+    print("Downloading Shotguns")
+    shotguns = sh.worksheet("Shotguns")
+
+    # Rocket Launchers/Heavy's
+    print("Downloading Rocket Launchers")
+    rocket_launchers = sh.worksheet("Rocket Launchers")
+
+    # Sniper Rifles
+    print("Downloading Sniper Rifles")
+    sniper_rifles = sh.worksheet("Sniper Rifles")
+
+    # Download Weapon Sheets that have the part and positives/negatives
+    all_weapon_sheets = [pistols, smgs, assault_rifles, shotguns, rocket_launchers, sniper_rifles]
+
+    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_NEW.csv", "w") as f:
+        w = csv.writer(f)
+        w.writerow(["Part", "Positives", "Negatives", "Effects"])
+
+        for sheet in all_weapon_sheets:
+            print("Saving: {}".format(sheet.title))
+
+            for val in sheet.get_all_values():
+                if len(val) >= 3:
+                    part_name = val[3]
+
+                    val[1] = val[1].replace(" ♦ ", ", ")
+                    val[2] = val[2].replace(" ♦ ", ", ")
+
+                    if val[1].strip() == "" and val[2].strip() == "":
+                        continue
+
+                    part_name_s = part_name.strip()
+                    positives_s = format_info(val[1])
+                    positives_s = positives_s.replace(":", " ")
+                    negatives_s = format_info(val[2])
+                    negatives_s = negatives_s.replace(":", " ")
+
+                    csv_row = [part_name_s, positives_s, negatives_s, ""]
+                    w.writerow(csv_row)
+
+
+def combine_inventory_parts_new_and_old():
+    all_rows = []
+
+    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_OLD.csv", "r") as old_info:
+        old_reader = csv.reader(old_info)
+
+        for (i, row) in enumerate(old_reader):
+            if i == 0:
+                continue
+
+            all_rows.append(row)
+
+    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_NEW.csv", "r") as new_info:
+        new_reader = csv.reader(new_info)
+
+        for (i, row) in enumerate(new_reader):
+            if i == 0:
+                continue
+
+            for (idx, existing) in enumerate(all_rows):
+                if existing[0] == row[0]:
+                    all_rows[idx] = row
+
+            if not any(r[0] == row[0] for r in all_rows):
+                all_rows.append(row)
+
+    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL.csv", "w") as f:
+        w = csv.writer(f)
+        w.writerow(["Part", "Positives", "Negatives", "Effects"])
+
+        for row in all_rows:
+            w.writerow(row)
+
+
 if __name__ == "__main__":
     gc = gspread.service_account()
 
     # download_inventory_parts()
-    # download_inventory_parts_info()
-    download_all_global_customizations()
+    # download_old_inventory_parts_info()
+    # download_new_inventory_parts_info()
+    # download_all_global_customizations()
+    combine_inventory_parts_new_and_old()
