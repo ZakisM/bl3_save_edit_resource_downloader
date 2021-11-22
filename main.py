@@ -2,6 +2,7 @@ import csv
 from pathlib import Path
 
 import gspread
+import requests
 
 
 def format_info(info):
@@ -43,34 +44,41 @@ def download_inventory_parts():
     Path("./output/INV_PARTS").mkdir(parents=True, exist_ok=True)
 
     # Borderlands 3 Weapon/Item Parts + Weights
-    sh = gc.open_by_key("1XYG30B6CulmcmmVDuq-PkLEJVtjAFacx7cuSkqbv5N4")
+    print("Downloading Weapon Parts")
+    weapons_csv_data = requests.get(
+        "https://raw.githubusercontent.com/BLCM/bl3mods/master/Apocalyptech/dataprocessing/gun_balances.csv").content
 
-    weapons = sh.worksheet("Weapons")
-    shields = sh.worksheet("Shields")
-    grenade_mods = sh.worksheet("Grenade Mods")
-    class_mods = sh.worksheet("Class Mods")
-    artifacts = sh.worksheet("Artifacts")
+    print("Downloading Shield Parts")
+    shields_csv_data = requests.get(
+        "https://raw.githubusercontent.com/BLCM/bl3mods/master/Apocalyptech/dataprocessing/shield_balances.csv").content
 
-    items = [weapons, shields, grenade_mods, class_mods, artifacts]
+    print("Downloading Grenade Mod Parts")
+    grenade_mods_csv_data = requests.get(
+        "https://raw.githubusercontent.com/BLCM/bl3mods/master/Apocalyptech/dataprocessing/grenade_balances.csv").content
 
-    all_records = []
+    print("Downloading Class Mod Parts")
+    class_mods_csv_data = requests.get(
+        "https://raw.githubusercontent.com/BLCM/bl3mods/master/Apocalyptech/dataprocessing/com_balances.csv").content
+
+    print("Downloading Artifacts Parts")
+    artifacts_csv_data = requests.get(
+        "https://raw.githubusercontent.com/BLCM/bl3mods/master/Apocalyptech/dataprocessing/artifact_balances.csv").content
+
+    items = [{"WEAPONS": weapons_csv_data}, {"SHIELDS": shields_csv_data}, {"GRENADE_MODS": grenade_mods_csv_data},
+             {"CLASS_MODS": class_mods_csv_data}, {"ARTIFACTS": artifacts_csv_data}]
 
     parts_filenames = []
 
-    for i in items:
-        filename = "output/INV_PARTS/INVENTORY_PARTS_{}.csv".format(i.title.upper().replace(" ", "_"))
-        parts_filenames.append(filename)
-        print("Saving: {}".format(filename))
+    for item in items:
+        for name in item:
+            data = item[name]
 
-        keys = i.row_values(1)
-        records = i.get_all_records()
+            filename = "output/INV_PARTS/INVENTORY_PARTS_{}.csv".format(name)
+            parts_filenames.append(filename)
+            print("Saving: {}".format(filename))
 
-        all_records.append(records)
-
-        with open(filename, "w") as f:
-            w = csv.DictWriter(f, fieldnames=keys)
-            w.writeheader()
-            w.writerows(records)
+            with open(filename, "wb") as f:
+                f.write(data)
 
     all_keys = ["Name", "Weapon Type", "Rarity", "Balance", "Category", "Min Parts", "Max Parts", "Weight", "Part",
                 "Dependencies", "Excluders"]
