@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/bl3_save_editor_resource_downloader.iml" filepath="$PROJECT_DIR$/bl3_save_editor_resource_downloader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/bl3_save_edit_resource_downloader.iml" filepath="$PROJECT_DIR$/.idea/bl3_save_edit_resource_downloader.iml" />
     </modules>
   </component>
 </project>

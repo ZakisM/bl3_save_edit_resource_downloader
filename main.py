@@ -85,7 +85,7 @@ def download_inventory_parts():
 
     all_keys_len = len(all_keys)
 
-    with open("output/INV_PARTS/INVENTORY_PARTS_ALL.csv", "w") as inv_parts_all:
+    with open("output/INV_PARTS/INVENTORY_PARTS_ALL.csv", "w", newline="") as inv_parts_all:
         headers = ",".join(all_keys)
         inv_parts_all.write(headers + "\n")
 
@@ -113,7 +113,7 @@ def download_old_inventory_parts_info():
     # Borderlands 3 - Item parts/stats
     sh = gc.open_by_key("16b7bGPFKIrNg_cJm_WCMO6cKahexBs7BiJ6ja0RlD04")
 
-    print("Downloading Arifacts, Shields and Grenades")
+    print("Downloading Artifacts, Shields and Grenades")
     artifact = sh.worksheet("Artifact")
     shield = sh.worksheet("Shield")
     grenade = sh.worksheet("Grenade")
@@ -187,7 +187,7 @@ def download_old_inventory_parts_info():
 
     heavy_weapons = [hw_atl, hw_cov, hw_tor, hw_vla]
 
-    print("Downloading Anointments")
+    print("Downloading Anointment's")
     anointment = sh.worksheet("Anointment")
 
     # Download Sheets that only have the part and effect (i.e key/val)
@@ -197,7 +197,7 @@ def download_old_inventory_parts_info():
     weapon_sheets_unflattened = [pistols, shotguns, assault_rifles, smgs, sniper_rifles, heavy_weapons]
     weapon_sheets = [item for sublist in weapon_sheets_unflattened for item in sublist]
 
-    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_OLD.csv", "w") as f:
+    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_OLD.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Part", "Positives", "Negatives", "Effects"])
 
@@ -293,7 +293,7 @@ def download_all_global_customizations():
     for (name, values) in all_items:
         print("Saving {}...".format(name))
 
-        with open("output/SKINS/{}.csv".format(name), "w") as f:
+        with open("output/SKINS/{}.csv".format(name), "w", newline="") as f:
             w = csv.writer(f)
 
             for sheet in values:
@@ -349,7 +349,7 @@ def download_new_inventory_parts_info():
     # Download Weapon Sheets that have the part and positives/negatives
     all_weapon_sheets = [pistols, smgs, assault_rifles, shotguns, rocket_launchers, sniper_rifles]
 
-    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_NEW.csv", "w") as f:
+    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_NEW.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Part", "Positives", "Negatives", "Effects"])
 
@@ -377,7 +377,7 @@ def download_new_inventory_parts_info():
 
 
 def combine_inventory_parts_new_and_old():
-    all_rows = []
+    all_rows = dict()
 
     with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_OLD.csv", "r") as old_info:
         old_reader = csv.reader(old_info)
@@ -386,27 +386,22 @@ def combine_inventory_parts_new_and_old():
             if i == 0:
                 continue
 
-            all_rows.append(row)
+            all_rows[row[0]] = row
 
     with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL_NEW.csv", "r") as new_info:
         new_reader = csv.reader(new_info)
 
-        for (i, row) in enumerate(new_reader):
+        for (i, new_row) in enumerate(new_reader):
             if i == 0:
                 continue
 
-            for (idx, existing) in enumerate(all_rows):
-                if existing[0] == row[0]:
-                    all_rows[idx] = row
+            all_rows[new_row[0]] = new_row
 
-            if not any(r[0] == row[0] for r in all_rows):
-                all_rows.append(row)
-
-    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL.csv", "w") as f:
+    with open("output/INV_PARTS_INFO/INVENTORY_PARTS_INFO_ALL.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Part", "Positives", "Negatives", "Effects"])
 
-        for row in all_rows:
+        for row in all_rows.values():
             w.writerow(row)
 
 
